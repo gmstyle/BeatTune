@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "app.vitune.compose.preferences"
+    namespace = "app.beattune.compose.preferences"
     compileSdk = 36
 
     defaultConfig {

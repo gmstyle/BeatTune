@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "app.vitune.compose.reordering"
+    namespace = "app.beattune.compose.reordering"
     compileSdk = 36
 
     defaultConfig {

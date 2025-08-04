@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "app.vitune.core.data"
+    namespace = "app.beattune.core.data"
     compileSdk = 36
 
     defaultConfig {

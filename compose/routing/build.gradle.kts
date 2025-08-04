@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "app.vitune.compose.routing"
+    namespace = "app.beattune.compose.routing"
     compileSdk = 36
 
     defaultConfig {
