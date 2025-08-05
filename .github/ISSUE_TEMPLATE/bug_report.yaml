@@ -5,10 +5,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for filling out this issue template. If you meant to submit a suggestion, feature request, etc., please fill out the [appropriate template](https://github.com/25huizengek1/ViTune/issues/new/choose).
-        Please do not submit a bug report for a network issue, unless it's an issue specific to ViTune.
+        Thank you for filling out this issue template. If you meant to submit a suggestion, feature request, etc., please fill out the [appropriate template](https://github.com/25huizengek1/BeatTune/issues/new/choose).
+        Please do not submit a bug report for a network issue, unless it's an issue specific to BeatTune.
 
-        ## ⚠️ Make sure you are able to reproduce the bug with the [latest version](https://github.com/25huizengek1/ViTune/releases/latest).
+        ## ⚠️ Make sure you are able to reproduce the bug with the [latest version](https://github.com/25huizengek1/BeatTune/releases/latest).
         ## ⚠️ Make sure there is no issue about this bug already.
 
   - type: textarea
@@ -62,14 +62,14 @@ body:
         If your bug includes a crash, please use include logs in your issue.
 
         To capture logs, you can use `adb logcat`, or, if you have root access on your device or installed [Shizuku](https://shizuku.rikka.app), you can use a logger of your choice, for example: [LogFox](https://github.com/F0x1d/LogFox) to record logs.
-        If you can, please filter on ViTune (`app.vitune.android`/`app.vitune.android.nightly`) to unclutter the logs a bit.
+        If you can, please filter on BeatTune (`app.vitune.android`/`app.vitune.android.nightly`) to unclutter the logs a bit.
 
         When submitting these logs here, please upload them as a file or upload them on [Pastebin](https://pastebin.com/). This way the issue ticket won't end up looking like a total mess.
 
   - type: input
     id: vitune-version
     attributes:
-      label: ViTune version
+      label: BeatTune version
       placeholder: |
         Example: "v1.1.5"
     validations:

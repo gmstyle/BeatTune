@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-private const val AGENT = "ViTune (https://github.com/25huizengek1/ViTune)"
+private const val AGENT = "BeatTune (https://github.com/25huizengek1/BeatTune)"
 
 object LrcLib {
     private val client by lazy {
