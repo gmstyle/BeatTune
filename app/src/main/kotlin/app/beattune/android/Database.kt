@@ -61,10 +61,20 @@ import app.beattune.core.ui.utils.songBundle
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
 
+class DatabaseConverters {
+    @TypeConverter
+    fun urlToString(url: Url) = url.toString()
+
+    @TypeConverter
+    fun stringToUrl(string: String) = Url(string)
+}
+
 @Dao
 @Suppress("TooManyFunctions")
 interface Database {
-    companion object : Database by DatabaseInitializer.instance.database
+    companion object {
+        val instance: Database by lazy { DatabaseInitializer.instance.database }
+    }
 
     @Transaction
     @Query("SELECT * FROM Song WHERE id NOT LIKE '$LOCAL_KEY_PREFIX%' ORDER BY ROWID ASC")
@@ -812,7 +822,7 @@ interface Database {
         AutoMigration(from = 29, to = 30)
     ]
 )
-@TypeConverters(Converters::class)
+@TypeConverters(Converters::class, DatabaseConverters::class)
 abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
     abstract val database: Database
 
@@ -1106,12 +1116,6 @@ object Converters {
 
         bytes
     }
-
-    @TypeConverter
-    fun urlToString(url: Url) = url.toString()
-
-    @TypeConverter
-    fun stringToUrl(string: String) = Url(string)
 }
 
 @Suppress("UnusedReceiverParameter")

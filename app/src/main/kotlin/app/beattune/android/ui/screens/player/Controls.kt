@@ -370,7 +370,7 @@ private fun MediaInfo(media: UiMedia) {
 
     LaunchedEffect(media) {
         withContext(Dispatchers.IO) {
-            artistInfo = Database
+            artistInfo = Database.instance
                 .songArtistInfo(media.id)
                 .takeIf { it.isNotEmpty() }
         }

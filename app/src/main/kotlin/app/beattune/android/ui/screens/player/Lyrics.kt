@@ -174,7 +174,7 @@ fun Lyrics(
     LaunchedEffect(mediaId, shouldShowSynchronizedLyrics) {
         runCatching {
             withContext(Dispatchers.IO) {
-                Database
+                Database.instance
                     .lyrics(mediaId)
                     .distinctUntilChanged()
                     .cancellable()
@@ -243,7 +243,7 @@ fun Lyrics(
                                 transaction {
                                     runCatching {
                                         currentEnsureSongInserted()
-                                        Database.upsert(it)
+                                        Database.instance.upsert(it)
                                     }
                                 }
                             }
@@ -273,7 +273,7 @@ fun Lyrics(
                 runCatching {
                     currentEnsureSongInserted()
 
-                    Database.upsert(
+                    Database.instance.upsert(
                         if (shouldShowSynchronizedLyrics) Lyrics(
                             songId = mediaId,
                             fixed = lyrics?.fixed,
@@ -308,7 +308,7 @@ fun Lyrics(
             onPick = {
                 runCatching {
                     transaction {
-                        Database.upsert(
+                        Database.instance.upsert(
                             Lyrics(
                                 songId = mediaId,
                                 fixed = lyrics?.fixed,
@@ -572,7 +572,7 @@ fun Lyrics(
                                                 runCatching {
                                                     currentEnsureSongInserted()
 
-                                                    Database.upsert(
+                                                    Database.instance.upsert(
                                                         if (shouldShowSynchronizedLyrics) Lyrics(
                                                             songId = mediaId,
                                                             fixed = lyrics?.fixed,
@@ -608,7 +608,7 @@ fun Lyrics(
                                                 lyrics?.let {
                                                     val startTime = binder?.player?.currentPosition
                                                     query {
-                                                        Database.upsert(it.copy(startTime = startTime))
+                                                        Database.instance.upsert(it.copy(startTime = startTime))
                                                     }
                                                 }
                                             }

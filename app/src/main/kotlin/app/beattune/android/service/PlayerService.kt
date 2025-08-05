@@ -257,7 +257,7 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
     private val isLikedState = mediaItemState
         .flatMapMerge { item ->
             item?.mediaId?.let {
-                Database
+                Database.instance
                     .likedAt(it)
                     .distinctUntilChanged()
                     .cancellable()
@@ -469,13 +469,13 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
 
         if (!DataPreferences.pausePlaytime) query {
             runCatching {
-                Database.incrementTotalPlayTimeMs(mediaItem.mediaId, totalPlayTimeMs)
+                Database.instance.incrementTotalPlayTimeMs(mediaItem.mediaId, totalPlayTimeMs)
             }
         }
 
         if (!DataPreferences.pauseHistory) query {
             runCatching {
-                Database.insert(
+                Database.instance.insert(
                     Event(
                         songId = mediaItem.mediaId,
                         timestamp = System.currentTimeMillis(),
@@ -606,8 +606,8 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
 
         transaction {
             runCatching {
-                Database.clearQueue()
-                Database.insert(
+                Database.instance.clearQueue()
+                Database.instance.insert(
                     mediaItems.mapIndexed { index, mediaItem ->
                         QueuedMediaItem(
                             mediaItem = mediaItem,
@@ -623,9 +623,9 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
         if (!PlayerPreferences.persistentQueue) return
 
         transaction {
-            val queue = Database.queue()
+            val queue = Database.instance.queue()
             if (queue.isEmpty()) return@transaction
-            Database.clearQueue()
+            Database.instance.clearQueue()
 
             val index = queue
                 .indexOfFirst { it.position != null }
@@ -679,7 +679,7 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
             runCatching {
                 fun Float?.toMb() = ((this ?: 0f) * 100).toInt()
 
-                Database.loudnessDb(songId).cancellable().collectLatest { loudness ->
+                Database.instance.loudnessDb(songId).cancellable().collectLatest { loudness ->
                     val loudnessMb = loudness.toMb().let {
                         if (it !in -2000..2000) {
                             withContext(Dispatchers.Main) {
@@ -695,7 +695,7 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
                         } else it
                     }
 
-                    Database.loudnessBoost(songId).cancellable().collectLatest { boost ->
+                    Database.instance.loudnessBoost(songId).cancellable().collectLatest { boost ->
                         withContext(Dispatchers.Main) {
                             loudnessEnhancer?.setTargetGain(
                                 PlayerPreferences.volumeNormalizationBaseGain.toMb() + boost.toMb() - loudnessMb
@@ -1187,7 +1187,7 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
             ).let { radioData ->
                 isLoadingRadio = true
                 radioJob = coroutineScope.launch {
-                    val items = radioData.process().let { Database.filterBlacklistedSongs(it) }
+                    val items = radioData.process().let { Database.instance.filterBlacklistedSongs(it) }
 
                     withContext(Dispatchers.Main) {
                         if (justAdd) player.addMediaItems(items.drop(1))
@@ -1240,7 +1240,7 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
     private fun likeAction() = mediaItemState.value?.let { mediaItem ->
         query {
             runCatching {
-                Database.like(
+                Database.instance.like(
                     songId = mediaItem.mediaId,
                     likedAt = if (isLikedState.value) null else System.currentTimeMillis()
                 )
@@ -1396,14 +1396,14 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
                             ?.removePrefix("0")
                             ?.let { durationText ->
                                 extras?.durationText = durationText
-                                Database.updateDurationText(mediaId, durationText)
+                                Database.instance.updateDurationText(mediaId, durationText)
                             }
 
                         transaction {
                             runCatching {
-                                mediaItem?.let(Database::insert)
+                                mediaItem?.let(Database.instance::insert)
 
-                                Database.insert(
+                                Database.instance.insert(
                                     Format(
                                         songId = mediaId,
                                         itag = format.itag,
@@ -1475,7 +1475,7 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
             .withFallback(context) { dataSpec ->
                 val id = dataSpec.key ?: error("No id found for resolving an alternative song")
                 val alternativeSong = runBlocking {
-                    Database
+                    Database.instance
                         .localSongsByRowIdDesc()
                         .first()
                         .find { id in it.title }

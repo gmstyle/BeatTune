@@ -66,7 +66,7 @@ fun SyncSettings(
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
 
-    val pipedSessions by Database.pipedSessions().collectAsState(initial = listOf())
+    val pipedSessions by Database.instance.pipedSessions().collectAsState(initial = listOf())
 
     var linkingPiped by remember { mutableStateOf(false) }
     if (linkingPiped) DefaultDialog(
@@ -220,7 +220,7 @@ fun SyncSettings(
                                     }
 
                                     transaction {
-                                        Database.insert(
+                                        Database.instance.insert(
                                             PipedSession(
                                                 apiBaseUrl = session.apiBaseUrl,
                                                 username = username,
@@ -258,7 +258,7 @@ fun SyncSettings(
         },
         onConfirm = {
             deletingPipedSession?.let {
-                transaction { Database.delete(pipedSessions[it]) }
+                transaction { Database.instance.delete(pipedSessions[it]) }
             }
         }
     )
