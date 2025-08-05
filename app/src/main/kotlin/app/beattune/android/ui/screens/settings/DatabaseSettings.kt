@@ -1,6 +1,7 @@
 package app.beattune.android.ui.screens.settings
 
 import android.content.ActivityNotFoundException
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -61,15 +62,22 @@ fun DatabaseSettings() = with(DataPreferences) {
         if (uri == null) return@rememberLauncherForActivityResult
 
         query {
-            Database.instance.checkpoint()
-            Database.instance.internal.close()
+            val dbPath = Database.instance.internal.path
+            if (dbPath == null) {
+                return@query
+            }
 
-            context.applicationContext.contentResolver.openInputStream(uri)
-                ?.use { inputStream ->
-                    FileOutputStream(Database.instance.internal.path).use { outputStream ->
+            Database.instance.checkpoint()
+
+            try {
+                context.applicationContext.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    FileOutputStream(dbPath).use { outputStream ->
                         inputStream.copyTo(outputStream)
                     }
                 }
+            } catch (e: java.io.IOException) {
+                return@query
+            }
 
             context.stopService(context.intent<PlayerService>())
             exitProcess(0)
