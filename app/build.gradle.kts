@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId = appId
 
-        minSdk = 21
+        minSdk = 26
         targetSdk = 36
 
         versionCode = System.getenv("ANDROID_VERSION_CODE")?.toIntOrNull() ?: 16
@@ -122,6 +122,7 @@ composeCompiler {
 }
 
 dependencies {
+    implementation(libs.dynalink)
     coreLibraryDesugaring(libs.desugaring)
 
     implementation(projects.compose.persist)

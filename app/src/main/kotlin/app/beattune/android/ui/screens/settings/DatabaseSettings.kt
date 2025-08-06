@@ -23,6 +23,7 @@ import app.beattune.android.ui.screens.Route
 import app.beattune.android.utils.intent
 import app.beattune.android.utils.toast
 import kotlinx.coroutines.flow.distinctUntilChanged
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -61,23 +62,34 @@ fun DatabaseSettings() = with(DataPreferences) {
         if (uri == null) return@rememberLauncherForActivityResult
 
         query {
-            val dbPath = Database.instance.internal.path
-            if (dbPath == null) {
-                return@query
-            }
+            val dbPath = Database.instance.internal.path ?: return@query
 
-            Database.instance.checkpoint()
+            // IMPORTANT: Close the database connection before touching the files.
+            // This releases the lock on all related files (.db, .db-shm, .db-wal).
+            Database.instance.internal.close()
+
+            // Delete all parts of the old database to prevent corruption.
+            val dbFile = File(dbPath)
+            val shmFile = File("$dbPath-shm")
+            val walFile = File("$dbPath-wal")
+
+            dbFile.delete()
+            shmFile.delete()
+            walFile.delete()
 
             try {
+                // Now, copy the backup file to the original database path.
                 context.applicationContext.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    FileOutputStream(dbPath).use { outputStream ->
+                    FileOutputStream(dbFile).use { outputStream ->
                         inputStream.copyTo(outputStream)
                     }
                 }
             } catch (e: java.io.IOException) {
+                // If the copy fails, there isn't much we can do. The app will restart with a fresh DB.
                 return@query
             }
 
+            // Force a restart of the app to re-initialize with the new database.
             context.stopService(context.intent<PlayerService>())
             exitProcess(0)
         }

@@ -46,3 +46,14 @@
 -keep class org.mozilla.classfile.ClassFileWriter
 -dontwarn org.mozilla.javascript.JavaToJSONConverters
 -dontwarn org.mozilla.javascript.tools.**
+# Sopprime gli avvisi per le classi jdk.dynalink che R8 non riesce a trovare.
+# Questo è necessario perché la libreria Rhino le utilizza in modo dinamico.
+-dontwarn jdk.dynalink.**
+
+# Mantiene tutte le classi della libreria Rhino e Dynalink per evitare che vengano
+# rimosse o rinominate da R8, cosa che romperebbe la loro funzionalità dinamica.
+-keep class org.mozilla.javascript.** { *; }
+-keep class org.dynalang.dynalink.** { *; }
+# Please add these rules to your existing keep rules in order to suppress warnings.
+# This is generated automatically by the Android Gradle plugin.
+-dontwarn java.lang.invoke.SwitchPoint
